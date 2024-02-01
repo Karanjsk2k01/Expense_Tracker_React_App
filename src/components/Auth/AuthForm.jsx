@@ -1,5 +1,5 @@
 import { useState, useRef, useContext } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import classes from './AuthForm.module.css';
 // import AuthContext from '../Context/Auth-context';
@@ -10,7 +10,7 @@ const AuthForm = () => {
   const [success, setSuccess] = useState(false);
 
   // const contextValue = useContext(AuthContext);
-  // const history = useNavigate();
+  const history = useNavigate();
 
   let emailRef = useRef();
   let passwordRef = useRef();
@@ -78,13 +78,14 @@ const AuthForm = () => {
 
         console.log(successUser)
 
-
-
-
         e.target.reset();
 
-        //redirect to homepage
-        // if (isLogin && response.ok) { history('/Store') }
+        // redirect to homepage
+        if (isLogin && response.ok) {
+          setTimeout(() => {
+            history('/Home');
+          }, 2000);
+        }
 
         setloader(prev => !prev);
 
@@ -147,6 +148,13 @@ const AuthForm = () => {
                   onClick={switchAuthModeHandler}
                 >
                   {isLogin ? 'Create new account' : 'Login with existing account'}
+                </button>
+                <button
+                  type='button'
+                  className={classes.toggle}
+                  onClick={() => { }}
+                >
+                  {isLogin ? 'Forgot password' : ''}
                 </button>
               </div>
             </form>
