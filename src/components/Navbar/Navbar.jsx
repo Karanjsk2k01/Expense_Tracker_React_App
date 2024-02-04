@@ -46,6 +46,15 @@ const Navbar = () => {
   }
 
 
+  const logoutHandler = (e) => {
+    e.preventDefault()
+
+    localStorage.removeItem('token')
+
+    history('/Auth')
+  }
+
+
 
   return (
     <div className={classes.navbar}>
@@ -57,6 +66,7 @@ const Navbar = () => {
         <span style={{ padding: '0 20px' }}>Your Profile is incomplete -</span>
         <Link to="/Profile" className={classes.link}>Please Complete your profile</Link>
         <Link to="/Auth" className={classes.auth}>Login</Link>
+        <button type='button' className={classes.button} onClick={logoutHandler}>Logout</button>
       </div>
     </div>
 

@@ -36,8 +36,8 @@
 }
 
 .button {
-  padding: 10px 15px;
-  border-radius: 20px;
+  padding: 10px 20px;
+  border-radius: 10px;
   background-color: coral;
   color: black;
   font-weight: bold;
