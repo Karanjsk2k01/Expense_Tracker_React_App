@@ -5,6 +5,7 @@ import Home from './components/Home/Home';
 import Profile from './components/profile/Profile';
 import { AuthProvider } from './components/store/Auth-context';
 import Navbar from './components/Navbar/Navbar';
+import ForgetPassword from './components/Auth/ForgetPassword';
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <Route path='/' element={<Home />} />
             <Route path='/Auth' element={<AuthForm />} />
             <Route path='/Profile' element={<Profile />} />
+            <Route path='/ForgetPassword' element={<ForgetPassword />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

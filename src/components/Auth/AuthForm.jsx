@@ -150,7 +150,7 @@ const AuthForm = () => {
                 <button
                   type='button'
                   className={classes.toggle}
-                  onClick={() => { }}
+                  onClick={() => { history('/ForgetPassword') }}
                 >
                   {isLogin ? 'Forgot password' : ''}
                 </button>
