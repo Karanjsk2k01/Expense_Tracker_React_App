@@ -2,14 +2,14 @@ import { useState, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import classes from './AuthForm.module.css';
-// import AuthContext from '../Context/Auth-context';
+import AuthContext from '../store/Auth-context';
 
 const AuthForm = () => {
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
   const [loader, setloader] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // const contextValue = useContext(AuthContext);
+  const contextValue = useContext(AuthContext);
   const history = useNavigate();
 
   let emailRef = useRef();
@@ -72,18 +72,16 @@ const AuthForm = () => {
         const successUser = await response.json();
 
 
-        // contextValue.login(successUser.idToken, successUser.email)
+        contextValue.login(successUser.idToken, successUser.email)
 
         setSuccess(true)
-
-        console.log(successUser)
 
         e.target.reset();
 
         // redirect to homepage
         if (isLogin && response.ok) {
           setTimeout(() => {
-            history('/Home');
+            history('/');
           }, 2000);
         }
 
@@ -128,7 +126,7 @@ const AuthForm = () => {
                 />
               </div>
               {!isLogin && <div className={classes.control}>
-                <label htmlFor="Confirm_Password">Confirm Password</label>
+                <label htmlFor="confirm_password">Confirm Password</label>
                 <input type='text' id='confirm_password' required ref={confirmPasswordRef} />
               </div>}
               <div className={classes.actions}>
