@@ -1,6 +1,7 @@
 import React from 'react'
 import classes from './Home.module.css'
 import Navbar from '../Navbar/Navbar'
+import AddExpense from '../AddExpense/AddExpense'
 
 
 const Home = () => {
@@ -8,9 +9,7 @@ const Home = () => {
     <>
       <Navbar />
       <section className={classes.Home}>
-        <h1>
-          Welcome to Expense Tracker
-        </h1>
+        <AddExpense />
       </section>
     </>
   )
