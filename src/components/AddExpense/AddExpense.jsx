@@ -50,7 +50,39 @@ const AddExpense = () => {
   const [expenseName, setExpenseName] = useState('');
   const [expenseAmount, setExpenseAmount] = useState('');
   const [category, setCategory] = useState('');
+  const [editExpenseId, setEditExpenseId] = useState(null);
   const navigate = useNavigate()
+
+  const handleDelete = async (id) => {
+    const filteredItems = expenses.filter((item) => id !== item.id)
+
+    const url = `https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/expenses/${id}.json/`;
+
+
+    try {
+      let res = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to delete the item');
+        return;
+      }
+
+      let fetchedData = await res.json()
+
+      console.log(fetchedData)
+
+    } catch (error) {
+      console.log('Error:', error.message);
+    }
+
+
+    setExpenses(filteredItems)
+  }
 
   const handleExpenseNameChange = (event) => {
     setExpenseName(event.target.value);
@@ -62,6 +94,84 @@ const AddExpense = () => {
 
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
+  };
+
+  const handleEdit = (id) => {
+
+    setEditExpenseId(id);
+
+    const expenseToEdit = expenses.find((item) => item.id === id);
+
+    setExpenseName(expenseToEdit.name);
+    setExpenseAmount(expenseToEdit.amount);
+    setCategory(expenseToEdit.category)
+  };
+
+  const handleCancelEdit = () => {
+    setEditExpenseId(null);
+    setExpenseName('');
+    setExpenseAmount('');
+    setCategory('');
+  };
+
+
+  const handleUpdateExpense = async (e) => {
+
+    e.preventDefault()
+    const idToken = localStorage.getItem('token');
+
+    if (!idToken) {
+      navigate('/Auth');
+      return;
+    }
+
+    const url = `https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/expenses/${editExpenseId}.json`;
+
+    // Check if all fields are filled
+    if (!expenseName || !expenseAmount || !category) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    const updatedExpense = {
+      name: expenseName,
+      amount: expenseAmount,
+      category: category,
+    };
+
+    console.log(updatedExpense)
+
+    try {
+      // Update expense details in Firebase using PUT method
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedExpense),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update expense');
+      }
+
+      // Retrieve updated expenses from Firebase
+      const fetchExpensesResponse = await fetch('https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/expenses.json');
+      const data = await fetchExpensesResponse.json();
+
+      const updatedExpenses = Object.keys(data).map((key) => ({
+        id: key,
+        ...data[key],
+      }));
+
+      setExpenses(updatedExpenses);
+      setExpenseName('');
+      setExpenseAmount('');
+      setCategory('');
+      setEditExpenseId(null);
+    } catch (error) {
+      console.error('Error updating expense:', error.message);
+    }
   };
 
   const handleFormSubmit = async (event) => {
@@ -126,9 +236,9 @@ const AddExpense = () => {
 
   return (
     <div className={classes.Expense}>
-      <h1 style={{ textAlign: 'center' }}>Add Expenses</h1>
       <div className={classes.wrapper}>
-        <form onSubmit={handleFormSubmit}>
+        <h1 style={{ textAlign: 'center' }}>Add Expenses</h1>
+        <form onSubmit={editExpenseId !== null ? handleUpdateExpense : handleFormSubmit}>
           <div className={classes.control}>
             <label htmlFor='Expense'>
               <FontAwesomeIcon icon={faArrowRight} />
@@ -156,27 +266,41 @@ const AddExpense = () => {
               <option value="Entertainment">Entertainment</option>
               <option value="others">others</option>
             </select>
-            <button>Add Expense</button>
+            <div className={classes.buttonWrapper}>
+              <button>{editExpenseId !== null ? 'Update Expense' : 'Add Expense'}</button>
+              {editExpenseId !== null && (
+                <button type="button" onClick={handleCancelEdit}>
+                  Cancel Edit
+                </button>
+              )}
+            </div>
+
           </div>
         </form>
       </div>
-      <div className={classes.wrapper}>
-        {expenses.length === 0 && <span>No Expense Found! Add more...</span>}
-        {expenses.length > 0 && expenses?.map((item, index) => (
-          < ul key={index} className={classes.expenseList}>
-            <li className={classes.expense}>
-              {item.name}
-            </li>
-            <li className={classes.type}>
-              Type:{item.category}
-            </li>
-            <li className={classes.amount}>
-              ${item.amount}
-            </li>
-          </ul>
-        ))}
+      <div className={classes.wrapper} >
+        <div className={classes.wrappersub}>
+          {expenses.length === 0 && <span>No Expense Found! Add more...</span>}
+          {expenses.length > 0 && expenses?.map((item, index) => (
+            < ul key={item.id} className={classes.expenseList}>
+              <li className={classes.expense}>
+                {item.name}
+              </li>
+              <li className={classes.type}>
+                Type:{item.category}
+              </li>
+              <li className={classes.amount}>
+                ${item.amount}
+              </li>
+              <button onClick={(e) => { return handleDelete(item.id) }}>Delete</button>
+              <button onClick={(e) => { return handleEdit(item.id) }}>Edit</button>
+            </ul>
+          ))}
+        </div>
+
+
       </div>
-    </div>
+    </div >
   )
 }
 

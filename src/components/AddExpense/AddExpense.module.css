@@ -2,8 +2,11 @@
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
 }
 
 .wrapper {
@@ -17,9 +20,11 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  height: 50%;
+  height: 70%;
   background-color: aliceblue;
+  overflow-y: auto;
 }
+
 
 .control {
   margin-bottom: 1rem;
@@ -55,16 +60,24 @@ button {
 
 .expenseList {
   display: flex;
-  gap: 10rem;
-  width: 80%;
+  gap: 2rem;
+  width: 95%;
   align-items: center;
+  justify-content: center;
   list-style: none;
   border: 0.5px solid red;
   padding: 10px;
   border-radius: 10px;
-  justify-content: space-between;
-  margin-top: 1rem;
+  margin-top: 2rem;
 
+}
+
+.wrappersub {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 2rem;
 }
 
 li {
@@ -89,4 +102,9 @@ li {
   font-weight: bolder;
   flex: 0.5;
   padding: 7px 10px;
+}
+
+.buttonWrapper {
+  display: flex;
+  gap: 20px;
 }
