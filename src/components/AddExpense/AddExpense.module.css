@@ -7,6 +7,7 @@
 }
 
 .wrapper {
+  margin-top: 20px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   width: 50rem;
   border-radius: 20px;
@@ -50,4 +51,42 @@ button {
   font-weight: bold;
   background-color: blanchedalmond;
   cursor: pointer;
+}
+
+.expenseList {
+  display: flex;
+  gap: 10rem;
+  width: 80%;
+  align-items: center;
+  list-style: none;
+  border: 0.5px solid red;
+  padding: 10px;
+  border-radius: 10px;
+  justify-content: space-between;
+  margin-top: 1rem;
+
+}
+
+li {
+  font-weight: bold;
+  padding: 10px 0;
+  border-radius: 10px;
+  width: 100%;
+  margin: 0;
+}
+
+.expense {
+  flex: 2;
+}
+
+.type {
+  flex: 1;
+}
+
+.amount {
+  background-color: coral;
+  color: black;
+  font-weight: bolder;
+  flex: 0.5;
+  padding: 7px 10px;
 }
