@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import classes from './Navbar.module.css';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import AuthContext from '../store/Auth-context';
 
 const Navbar = () => {
 
   const history = useNavigate()
-
+  const contextVal = useContext(AuthContext)
   const verifyEmailHandler = async (e) => {
 
     e.preventDefault();
@@ -62,11 +63,16 @@ const Navbar = () => {
         <span>Expense Tracker</span>
       </div>
       <div className={classes.left}>
-        <button type='button' className={classes.button} onClick={verifyEmailHandler}>Verify Email</button>
-        <span style={{ padding: '0 20px' }}>Your Profile is incomplete -</span>
-        <Link to="/Profile" className={classes.link}>Please Complete your profile</Link>
-        <Link to="/Auth" className={classes.auth}>Login</Link>
-        <button type='button' className={classes.button} onClick={logoutHandler}>Logout</button>
+        {contextVal.isLoggenIn ? <>
+          <button type='button' className={classes.button} onClick={verifyEmailHandler}>Verify Email</button>
+          <span style={{ padding: '0 20px' }}>Your Profile is incomplete -</span>
+          <Link to="/Profile" className={classes.link}>Please Complete your profile</Link>
+          <button type='button' className={classes.button} onClick={logoutHandler}>Logout</button>
+        </> :
+          <Link to="/Auth" className={classes.auth}>Login</Link>
+        }
+
+
       </div>
     </div>
 

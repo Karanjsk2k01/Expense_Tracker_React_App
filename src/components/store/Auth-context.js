@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 const AuthContext = React.createContext({
@@ -17,7 +18,9 @@ export const AuthProvider = (props) => {
   let initialtoken = localStorage.getItem('token')
   let initialEmail = localStorage.getItem('email')
   const [token, settoken] = useState(initialtoken);
-  const [email, setEmail] = useState(initialEmail)
+  const [email, setEmail] = useState(initialEmail);
+  const [isLoggenIn, setIsLoggenIn] = useState(!!initialtoken);
+
 
   useEffect(() => {
     if (token) {
@@ -40,22 +43,26 @@ export const AuthProvider = (props) => {
     if (expiredToken === initialtoken) {
       logoutHandler()
     }
+
+    return;
   }, [])
 
 
-  const isLoggenIn = !!token;
 
   const loginHandler = (token, email) => {
     settoken(token);
     setEmail(email)
+    setIsLoggenIn(true)
     localStorage.setItem('token', token)
     localStorage.setItem('email', email)
   }
 
   const logoutHandler = () => {
     settoken('');
+    setIsLoggenIn(false)
     localStorage.removeItem('token')
     localStorage.removeItem('expiredToken')
+    localStorage.removeItem('email')
   }
 
   const contextValue = {
