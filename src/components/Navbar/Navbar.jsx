@@ -3,10 +3,14 @@ import classes from './Navbar.module.css';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import AuthContext from '../store/Auth-context';
+import { useDispatch, useSelector } from 'react-redux';
+import { themeActions } from '../store/themeContext';
 
 const Navbar = () => {
 
+  const mode = useSelector(state => state.theme.darkMode);
   const history = useNavigate()
+  const dispatch = useDispatch()
   const contextVal = useContext(AuthContext)
   const verifyEmailHandler = async (e) => {
 
@@ -46,6 +50,12 @@ const Navbar = () => {
     }
   }
 
+  const toggleHandler = (e) => {
+    e.preventDefault()
+
+    dispatch(themeActions.toggleDarkMode())
+
+  }
 
   const logoutHandler = (e) => {
     e.preventDefault()
@@ -64,6 +74,7 @@ const Navbar = () => {
       </div>
       <div className={classes.left}>
         {contextVal.isLoggenIn ? <>
+          <button type='button' className={classes.toggle} onClick={toggleHandler}>{mode ? 'DarkMode' : 'LightMode'}</button>
           <button type='button' className={classes.button} onClick={verifyEmailHandler}>Verify Email</button>
           <span style={{ padding: '0 20px' }}>Your Profile is incomplete -</span>
           <Link to="/Profile" className={classes.link}>Please Complete your profile</Link>

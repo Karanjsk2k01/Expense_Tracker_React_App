@@ -6,14 +6,18 @@ import Profile from './components/profile/Profile';
 import AuthContext, { AuthProvider } from './components/store/Auth-context';
 import ForgetPassword from './components/Auth/ForgetPassword';
 import { useContext } from 'react';
+import { useState } from 'react';
 
 function App() {
   const contextVal = useContext(AuthContext);
   const isLoggenIn = contextVal.isLoggenIn;
+  const [isDarkMode, setisDarkMode] = useState('dark');
+
+  console.log(isDarkMode)
 
   return (
-    <div className="App">
-      <BrowserRouter>
+    <div className={`app ${isDarkMode ? 'dark' : 'light'}`} >
+      < BrowserRouter >
         <Routes>
           <Route path='/Auth' element={<AuthForm />} />
           {isLoggenIn ? (
@@ -29,8 +33,8 @@ function App() {
             />
           )}
         </Routes>
-      </BrowserRouter>
-    </div>
+      </BrowserRouter >
+    </div >
   );
 }
 
