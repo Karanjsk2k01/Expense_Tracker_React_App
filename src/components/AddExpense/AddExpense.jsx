@@ -2,9 +2,18 @@ import React, { useEffect, useState } from 'react'
 import classes from './AddExpense.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faIcons, faTag } from '@fortawesome/free-solid-svg-icons'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { expenseActions } from '../store/expenseContext';
+
+
 
 const AddExpense = () => {
+
+  const dispatch = useDispatch();
+  const expense = useSelector(state => state.expenses.expense);
+  const totalExpenses = useSelector(state => state.expenses.totalexpense);
+  const premiumActivated = useSelector(state => state.expenses.premiumActivation);
 
   useEffect(() => {
 
@@ -36,6 +45,9 @@ const AddExpense = () => {
           ...data[key],
         }));
 
+
+        dispatch(expenseActions.addExpense(updatedExpenses))
+
         setExpenses(updatedExpenses);
 
       } catch (error) {
@@ -53,8 +65,9 @@ const AddExpense = () => {
   const [editExpenseId, setEditExpenseId] = useState(null);
   const navigate = useNavigate()
 
+
   const handleDelete = async (id) => {
-    const filteredItems = expenses.filter((item) => id !== item.id)
+    const filteredItems = expenses.filter((item) => id !== item.id);
 
     const url = `https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/expenses/${id}.json/`;
 
@@ -74,7 +87,7 @@ const AddExpense = () => {
 
       let fetchedData = await res.json()
 
-      console.log(fetchedData)
+      dispatch(expenseActions.deleteExpense(id))
 
     } catch (error) {
       console.log('Error:', error.message);
@@ -164,6 +177,7 @@ const AddExpense = () => {
         ...data[key],
       }));
 
+      dispatch(expenseActions.addExpense(updatedExpense))
       setExpenses(updatedExpenses);
       setExpenseName('');
       setExpenseAmount('');
@@ -183,6 +197,7 @@ const AddExpense = () => {
       navigate('/Auth');
       return;
     }
+
 
     const url = 'https://react-api-demo-f9b0e-default-rtdb.firebaseio.com//expenses.json';
 
@@ -222,6 +237,9 @@ const AddExpense = () => {
         ...data[key],
       }));
 
+      console.log(updatedExpenses)
+
+      dispatch(expenseActions.addExpense(updatedExpenses));
       setExpenses(updatedExpenses);
 
       setExpenseName('');
@@ -236,48 +254,57 @@ const AddExpense = () => {
 
   return (
     <div className={classes.Expense}>
-      <div className={classes.wrapper}>
-        <h1 style={{ textAlign: 'center' }}>Add Expenses</h1>
-        <form onSubmit={editExpenseId !== null ? handleUpdateExpense : handleFormSubmit}>
-          <div className={classes.control}>
-            <label htmlFor='Expense'>
-              <FontAwesomeIcon icon={faArrowRight} />
-              <span style={{ padding: '0 20px' }}>Expense</span>
-            </label>
-            <input type='text' id='Expense' required value={expenseName} onChange={handleExpenseNameChange} />
-          </div>
-          <div className={classes.control}>
-            <label htmlFor='ExpenseAmount'>
-              <FontAwesomeIcon icon={faTag} />
-              <span style={{ padding: '0 20px' }}>Amount </span>
-            </label>
-            <input type='number' min={0} max={1000} id='ExpenseAmount' required value={expenseAmount} onChange={handleExpenseAmountChange} />
-          </div>
-          <div className={classes.control}>
-            <label htmlFor='Category'>
-              <FontAwesomeIcon icon={faIcons} />
-              <span style={{ padding: '0 20px' }}>Category </span>
-            </label>
-            <select name="expenseitem" id="expenseitem" value={category} onChange={handleCategoryChange}>
-              <option defaultValue="Select"> Select </option>
-              <option value="Food">Food</option>
-              <option value="Petrol">Petrol</option>
-              <option value="Salary">Salary</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="others">others</option>
-            </select>
-            <div className={classes.buttonWrapper}>
-              <button>{editExpenseId !== null ? 'Update Expense' : 'Add Expense'}</button>
-              {editExpenseId !== null && (
-                <button type="button" onClick={handleCancelEdit}>
-                  Cancel Edit
-                </button>
-              )}
+      {premiumActivated ? (
+        <div className={classes.wrapper}>
+          <h1 style={{ textAlign: 'center' }}>Activate Premium</h1>
+          <button className={classes.activatePremiumButton}>Activate Premium</button>
+        </div>
+      ) : (
+        <div className={classes.wrapper}>
+          <h1 style={{ textAlign: 'center' }}>Add Expenses</h1>
+          <form onSubmit={editExpenseId !== null ? handleUpdateExpense : handleFormSubmit}>
+            <div className={classes.control}>
+              <label htmlFor='Expense'>
+                <FontAwesomeIcon icon={faArrowRight} />
+                <span style={{ padding: '0 20px' }}>Expense</span>
+              </label>
+              <input type='text' id='Expense' required value={expenseName} onChange={handleExpenseNameChange} />
             </div>
+            <div className={classes.control}>
+              <label htmlFor='ExpenseAmount'>
+                <FontAwesomeIcon icon={faTag} />
+                <span style={{ padding: '0 20px' }}>Amount </span>
+              </label>
+              <input type='number' min={0} max={1000} id='ExpenseAmount' required value={expenseAmount} onChange={handleExpenseAmountChange} />
+            </div>
+            <div className={classes.control}>
+              <label htmlFor='Category'>
+                <FontAwesomeIcon icon={faIcons} />
+                <span style={{ padding: '0 20px' }}>Category </span>
+              </label>
+              <select name="expenseitem" id="expenseitem" value={category} onChange={handleCategoryChange}>
+                <option defaultValue="Select"> Select </option>
+                <option value="Food">Food</option>
+                <option value="Petrol">Petrol</option>
+                <option value="Salary">Salary</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="others">others</option>
+              </select>
+              <div className={classes.buttonWrapper}>
+                <button>
+                  {editExpenseId !== null ? 'Update Expense' : 'Add Expense'}
+                </button>
+                {editExpenseId !== null && (
+                  <button type="button" onClick={handleCancelEdit}>
+                    Cancel Edit
+                  </button>
+                )}
+              </div>
 
-          </div>
-        </form>
-      </div>
+            </div>
+          </form>
+        </div >)
+      }
       <div className={classes.wrapper} >
         <div className={classes.wrappersub}>
           {expenses.length === 0 && <span>No Expense Found! Add more...</span>}
