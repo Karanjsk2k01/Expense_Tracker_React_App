@@ -11,6 +11,7 @@ import { expenseActions } from '../store/expenseContext';
 const AddExpense = () => {
 
   const dispatch = useDispatch();
+  const mode = useSelector(state => state.theme.darkMode)
   const expense = useSelector(state => state.expenses.expense);
   const totalExpenses = useSelector(state => state.expenses.totalexpense);
   const premiumActivated = useSelector(state => state.expenses.premiumActivation);
@@ -255,12 +256,12 @@ const AddExpense = () => {
   return (
     <div className={classes.Expense}>
       {premiumActivated ? (
-        <div className={classes.wrapper}>
+        <div className={!mode ? classes.wrapper : classes.wrapper_dark}>
           <h1 style={{ textAlign: 'center' }}>Activate Premium</h1>
           <button className={classes.activatePremiumButton}>Activate Premium</button>
         </div>
       ) : (
-        <div className={classes.wrapper}>
+        <div className={!mode ? classes.wrapper : classes.wrapper_dark}>
           <h1 style={{ textAlign: 'center' }}>Add Expenses</h1>
           <form onSubmit={editExpenseId !== null ? handleUpdateExpense : handleFormSubmit}>
             <div className={classes.control}>
@@ -290,7 +291,7 @@ const AddExpense = () => {
                 <option value="Entertainment">Entertainment</option>
                 <option value="others">others</option>
               </select>
-              <div className={classes.buttonWrapper}>
+              <div>
                 <button>
                   {editExpenseId !== null ? 'Update Expense' : 'Add Expense'}
                 </button>
@@ -305,7 +306,7 @@ const AddExpense = () => {
           </form>
         </div >)
       }
-      <div className={classes.wrapper} >
+      <div className={!mode ? classes.wrapper : classes.wrapper_dark} >
         <div className={classes.wrappersub}>
           {expenses.length === 0 && <span>No Expense Found! Add more...</span>}
           {expenses.length > 0 && expenses?.map((item, index) => (

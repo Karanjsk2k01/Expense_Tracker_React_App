@@ -10,6 +10,17 @@
 
 }
 
+.navbar_dark {
+  margin: 0;
+  height: 5.5rem;
+  background-color: black;
+  width: 100%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .right {
   font-weight: bold;
   margin-left: 5rem;

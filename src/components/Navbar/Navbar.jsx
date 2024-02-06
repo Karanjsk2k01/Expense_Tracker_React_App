@@ -9,6 +9,7 @@ import { themeActions } from '../store/themeContext';
 const Navbar = () => {
 
   const mode = useSelector(state => state.theme.darkMode);
+  const premiumActivated = useSelector(state => state.expenses.premiumActivation)
   const history = useNavigate()
   const dispatch = useDispatch()
   const contextVal = useContext(AuthContext)
@@ -68,13 +69,13 @@ const Navbar = () => {
 
 
   return (
-    <div className={classes.navbar}>
+    <div className={mode ? classes.navbar_dark : classes.navbar}>
       <div className={classes.right}>
         <span>Expense Tracker</span>
       </div>
       <div className={classes.left}>
         {contextVal.isLoggenIn ? <>
-          <button type='button' className={classes.toggle} onClick={toggleHandler}>{mode ? 'DarkMode' : 'LightMode'}</button>
+          {premiumActivated && <button type='button' className={classes.toggle} onClick={toggleHandler}>{mode ? 'DarkMode' : 'LightMode'}</button>}
           <button type='button' className={classes.button} onClick={verifyEmailHandler}>Verify Email</button>
           <span style={{ padding: '0 20px' }}>Your Profile is incomplete -</span>
           <Link to="/Profile" className={classes.link}>Please Complete your profile</Link>

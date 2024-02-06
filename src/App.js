@@ -7,16 +7,16 @@ import AuthContext, { AuthProvider } from './components/store/Auth-context';
 import ForgetPassword from './components/Auth/ForgetPassword';
 import { useContext } from 'react';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 function App() {
   const contextVal = useContext(AuthContext);
   const isLoggenIn = contextVal.isLoggenIn;
-  const [isDarkMode, setisDarkMode] = useState('dark');
+  const mode = useSelector(state => state.theme.darkMode)
 
-  console.log(isDarkMode)
-
+  console.log(mode)
   return (
-    <div className={`app ${isDarkMode ? 'dark' : 'light'}`} >
+    <div className={`app ${mode ? 'dark' : 'light'}`} >
       < BrowserRouter >
         <Routes>
           <Route path='/Auth' element={<AuthForm />} />
