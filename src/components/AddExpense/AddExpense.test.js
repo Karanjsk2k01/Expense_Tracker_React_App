@@ -1,22 +1,48 @@
-import { render, screen } from "@testing-library/react";
-import { BrowserRouter as Router } from "react-router-dom"; // Import BrowserRouter
-import AddExpense from "./AddExpense";
-import store from "../store/context"; // Import your Redux store
-import { Provider } from "react-redux";
+import React from 'react';
+import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom'; // Import MemoryRouter
+import configureStore from 'redux-mock-store';
+import AddExpense from './AddExpense';
 
-describe('Add Expense component testing', () => {
-  test('checks "Add expense" is present or not', () => {
+const mockStore = configureStore([]);
+
+describe('<AddExpense />', () => {
+  let store;
+
+  beforeEach(() => {
+    store = mockStore({
+      theme: {
+        darkMode: false,
+      },
+      expenses: {
+        expense: [],
+        totalexpense: 0,
+        premiumActivation: false,
+      },
+    });
+  });
+
+  it('renders without crashing', () => {
     render(
       <Provider store={store}>
-        <Router> {/* Wrap your component with BrowserRouter */}
+        <MemoryRouter>
           <AddExpense />
-        </Router>
+        </MemoryRouter>
       </Provider>
-
     );
-
-    // Assert
-    const textAddExpense = screen.getByText('Add Expense', { exact: false });
-    expect(textAddExpense).toBeInTheDocument();
   });
+
+  it('displays Add Expenses header', () => { // Move this test outside of the previous test
+    const { getByText } = render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <AddExpense />
+        </MemoryRouter>
+      </Provider>
+    );
+    expect(getByText('Add Expenses')).toBeInTheDocument();
+  });
+
+  // Add more test cases as needed
 });
