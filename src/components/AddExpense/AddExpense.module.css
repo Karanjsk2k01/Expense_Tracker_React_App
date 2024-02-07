@@ -1,6 +1,6 @@
 .Expense {
   width: 100%;
-  height: 100%;
+  height: 80%;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -10,7 +10,7 @@
 }
 
 .wrapper {
-  margin-top: 20px;
+  margin: 20px 0;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   width: 50rem;
   border-radius: 20px;
@@ -20,14 +20,46 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  height: 70%;
+  height: 40rem;
   background-color: aliceblue;
+  overflow-y: auto;
+}
+
+.wrapperlist {
+  margin: 20px 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  width: 50rem;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 40rem;
+  background-color: aliceblue;
+  overflow-y: auto;
+}
+
+.wrapper_dark_list {
+  margin: 20px 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  width: 50rem;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 40rem;
+  background-color: black;
   overflow-y: auto;
 }
 
 
 .wrapper_dark {
-  margin-top: 20px;
+  margin: 20px 0;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   width: 50rem;
   border-radius: 20px;
@@ -37,9 +69,9 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  height: 70%;
+  height: 40rem;
   background-color: black;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
 .control {

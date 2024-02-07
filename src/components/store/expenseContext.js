@@ -18,9 +18,6 @@ const expenseSlice = createSlice({
         state.totalexpense += parseInt(entry.amount)
       });
 
-      if (state.totalexpense > 1000) {
-        state.premiumActivation = true;
-      }
     },
     deleteExpense(state, action) {
       const id = action.payload;
@@ -31,6 +28,9 @@ const expenseSlice = createSlice({
       if (state.totalexpense <= 10000) {
         state.premiumActivation = false;
       }
+    },
+    addPremium(state) {
+      state.premiumActivation = !state.premiumActivation;
     }
 
   }
