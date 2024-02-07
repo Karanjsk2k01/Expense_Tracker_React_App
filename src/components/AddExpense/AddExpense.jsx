@@ -299,7 +299,7 @@ const AddExpense = () => {
             <div className={classes.control}>
               <label htmlFor='Category'>
                 <FontAwesomeIcon icon={faIcons} />
-                <span style={{ padding: '0 20px' }}>Category </span>
+                <span style={{ padding: '0 20px' }}>Category</span>
               </label>
               <select name="expenseitem" id="expenseitem" value={category} onChange={handleCategoryChange}>
                 <option defaultValue="Select"> Select </option>
@@ -329,7 +329,7 @@ const AddExpense = () => {
           {expenses.length === 0 && <span>No Expense Found! Add more...</span>}
           {expenses.length > 0 && expenses?.map((item, index) => (
             < ul key={item.id} className={classes.expenseList}>
-              <li className={classes.expense}>
+              <li id="listitem" className={classes.expense}>
                 {item.name}
               </li>
               <li className={classes.type}>
