@@ -6,7 +6,6 @@ import Profile from './components/profile/Profile';
 import AuthContext, { AuthProvider } from './components/store/Auth-context';
 import ForgetPassword from './components/Auth/ForgetPassword';
 import { useContext } from 'react';
-import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 function App() {
@@ -20,11 +19,12 @@ function App() {
       < BrowserRouter >
         <Routes>
           <Route path='/Auth' element={<AuthForm />} />
+          <Route path='/ForgetPassword' element={<ForgetPassword />} />
+
           {isLoggenIn ? (
             <>
               <Route path='/' element={<Home />} />
               <Route path='/Profile' element={<Profile />} />
-              <Route path='/ForgetPassword' element={<ForgetPassword />} />
             </>
           ) : (
             <Route

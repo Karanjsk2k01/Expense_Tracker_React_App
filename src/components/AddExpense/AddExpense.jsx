@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import classes from './AddExpense.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight, faDownload, faIcons, faTag } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRight, faDownload, faIcons, faL, faTag } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { expenseActions } from '../store/expenseContext';
 import downloadExpensesAsPDF from './download';
+import AuthContext from '../store/Auth-context';
 
 
 
@@ -13,9 +14,17 @@ const AddExpense = () => {
 
   const dispatch = useDispatch();
   const mode = useSelector(state => state.theme.darkMode)
-  const expense = useSelector(state => state.expenses.expense);
-  const totalExpenses = useSelector(state => state.expenses.totalexpense);
-  const premiumActivated = useSelector(state => state.expenses.premiumActivation);
+  const { emailId } = useContext(AuthContext);
+  const [expenses, setExpenses] = useState([]);
+  const [premium, setpremium] = useState(false)
+  const [expenseName, setExpenseName] = useState('');
+  const [expenseAmount, setExpenseAmount] = useState('');
+  const [category, setCategory] = useState('');
+  const [editExpenseId, setEditExpenseId] = useState(null);
+  const navigate = useNavigate();
+  const premiumActivated = useSelector(state => state.expenses.premiumActivation)
+
+  const encodedEmail = emailId.replace(/\./g, ',');
 
   const downloadData = (e, expenses) => {
 
@@ -24,7 +33,6 @@ const AddExpense = () => {
   }
 
   useEffect(() => {
-
     const fetchData = async () => {
       const idToken = localStorage.getItem('token');
 
@@ -33,20 +41,28 @@ const AddExpense = () => {
         return;
       }
 
-      const url = 'https://react-api-demo-f9b0e-default-rtdb.firebaseio.com//expenses.json';
+      const url = `https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/users/${encodedEmail}/expenses.json`;
+
+      const premiumActivationUrl = `https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/expenses/users/${encodedEmail}/premiumActivated.json`;
 
       try {
-        // Post expense details to Firebase
         const response = await fetch(url);
+
+        const res = await fetch(premiumActivationUrl)
+
+        const data1 = await res.json()
+
+        console.log(data1)
+
+        if (data1) {
+          dispatch(expenseActions.addPremium(true));
+        }
 
         if (!response.ok) {
           throw new Error('Something went Wrong..');
-          return;
         }
 
-        // Retrieve updated expenses from Firebase
-        const fetchExpensesResponse = await fetch(url);
-        const data = await fetchExpensesResponse.json();
+        const data = await response.json();
 
         const updatedExpenses = Object.keys(data).map(key => ({
           id: key,
@@ -54,25 +70,19 @@ const AddExpense = () => {
         }));
 
 
-        dispatch(expenseActions.addExpense(updatedExpenses))
 
+        dispatch(expenseActions.addExpense(updatedExpenses));
         setExpenses(updatedExpenses);
-
       } catch (error) {
-        console.error('Error adding expense:', error.message);
+        console.error('Error fetching data:', error.message);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
-  const [expenses, setExpenses] = useState([]);
-  const [premium, setpremium] = useState(false)
-  const [expenseName, setExpenseName] = useState('');
-  const [expenseAmount, setExpenseAmount] = useState('');
-  const [category, setCategory] = useState('');
-  const [editExpenseId, setEditExpenseId] = useState(null);
-  const navigate = useNavigate()
+
+
 
 
   const handleDelete = async (e, id) => {
@@ -81,7 +91,7 @@ const AddExpense = () => {
 
     const filteredItems = expenses.filter((item) => id !== item.id);
 
-    const url = `https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/expenses/${id}.json/`;
+    const url = `https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/users/${encodedEmail}/expenses/${id}.json/`;
 
 
     try {
@@ -150,7 +160,11 @@ const AddExpense = () => {
       return;
     }
 
-    const url = `https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/expenses/${editExpenseId}.json`;
+    const url = `https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/users/${encodedEmail}/expenses/${editExpenseId}.json`;
+
+    const premiumActivationUrl = `https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/expenses/users/${encodedEmail}/premiumActivated.json`;
+
+
 
     // Check if all fields are filled
     if (!expenseName || !expenseAmount || !category) {
@@ -164,7 +178,8 @@ const AddExpense = () => {
       category: category,
     };
 
-    console.log(updatedExpense)
+    // console.log(updatedExpense)
+
 
     try {
       // Update expense details in Firebase using PUT method
@@ -181,7 +196,7 @@ const AddExpense = () => {
       }
 
       // Retrieve updated expenses from Firebase
-      const fetchExpensesResponse = await fetch('https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/expenses.json');
+      const fetchExpensesResponse = await fetch(`https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/users/${encodedEmail}/expenses.json`);
       const data = await fetchExpensesResponse.json();
 
       const updatedExpenses = Object.keys(data).map((key) => ({
@@ -189,13 +204,42 @@ const AddExpense = () => {
         ...data[key],
       }));
 
-      console.log(updatedExpense)
       setExpenses(updatedExpenses);
       // dispatch(expenseActions.addExpense(updatedExpense));
       setExpenseName('');
       setExpenseAmount('');
       setCategory('');
       setEditExpenseId(null);
+
+      const totalExpenseAmount = updatedExpenses.reduce((total, expense) => total + parseInt(expense.amount), 0);
+
+      if (totalExpenseAmount >= 1000) {
+        const premiumResponse = await fetch(premiumActivationUrl);
+        const premiumData = await premiumResponse.json();
+
+
+        if (premiumData) {
+          return;
+        } else {
+          // Premium activation doesn't exist, post it
+          const premiumPostResponse = await fetch(premiumActivationUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(true),
+          });
+
+          if (!premiumPostResponse.ok) {
+            throw new Error('Failed to activate premium');
+          }
+        }
+
+        setpremium(true);
+      }
+
+
+
     } catch (error) {
       console.error('Error updating expense:', error.message);
     }
@@ -212,7 +256,9 @@ const AddExpense = () => {
     }
 
 
-    const url = 'https://react-api-demo-f9b0e-default-rtdb.firebaseio.com//expenses.json';
+    const url = `https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/users/${encodedEmail}/expenses.json`;
+
+    const premiumActivationUrl = `https://react-api-demo-f9b0e-default-rtdb.firebaseio.com/expenses/users/${encodedEmail}/premiumActivated.json`;
 
     // Check if all fields are filled
     if (!expenseName || !expenseAmount || !category) {
@@ -238,19 +284,17 @@ const AddExpense = () => {
 
       if (!response.ok) {
         throw new Error('Failed to add expense');
-        return;
       }
 
       // Retrieve updated expenses from Firebase
       const fetchExpensesResponse = await fetch(url);
       const data = await fetchExpensesResponse.json();
 
+      console.log(data)
       const updatedExpenses = Object.keys(data).map(key => ({
         id: key,
         ...data[key],
       }));
-
-      console.log(updatedExpenses)
 
       dispatch(expenseActions.addExpense(updatedExpenses));
       setExpenses(updatedExpenses);
@@ -259,6 +303,36 @@ const AddExpense = () => {
       setExpenseAmount('');
       setCategory('');
 
+      const totalExpenseAmount = updatedExpenses.reduce((total, expense) => total + parseInt(expense.amount), 0);
+
+      if (totalExpenseAmount >= 1000) {
+        const premiumResponse = await fetch(premiumActivationUrl);
+        const premiumData = await premiumResponse.json();
+
+        console.log(premiumData)
+
+        if (premiumData) {
+          return;
+        } else {
+          // Premium activation doesn't exist, post it
+          const premiumPostResponse = await fetch(premiumActivationUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(true),
+          });
+
+          if (!premiumPostResponse.ok) {
+            throw new Error('Failed to activate premium');
+          }
+
+          setpremium(true);
+        }
+
+
+      }
+
     } catch (error) {
       console.error('Error adding expense:', error.message);
     }
@@ -266,14 +340,14 @@ const AddExpense = () => {
 
   const handleActivation = (e) => {
     e.preventDefault()
-    dispatch(expenseActions.addPremium());
-    setpremium(true);
+    dispatch(expenseActions.addPremium(true));
+    setpremium(false);
   }
 
 
   return (
     <div className={classes.Expense}>
-      {totalExpenses >= 1000 && !premium ? (
+      {premium ? (
         <div className={!mode ? classes.wrapper : classes.wrapper_dark}>
           <h1 style={{ textAlign: 'center' }}>Activate Premium</h1>
           <button className={classes.activatePremiumButton} onClick={handleActivation}>Activate Premium</button>
@@ -309,8 +383,8 @@ const AddExpense = () => {
                 <option value="Entertainment">Entertainment</option>
                 <option value="others">others</option>
               </select>
-              <div>
-                <button>
+              <div style={{ marginLeft: '10px' }}>
+                <button style={{ marginRight: '10px' }}>
                   {editExpenseId !== null ? 'Update Expense' : 'Add Expense'}
                 </button>
                 {editExpenseId !== null && (
@@ -343,7 +417,7 @@ const AddExpense = () => {
             </ul>
           ))}
         </div>
-        {premium && expenses.length > 0 &&
+        {premiumActivated && expenses.length > 0 &&
           <div>
             <button onClick={(e) => { return downloadData(e, expenses) }}>
               <FontAwesomeIcon icon={faDownload} />

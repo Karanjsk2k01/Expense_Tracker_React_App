@@ -23,14 +23,9 @@ const expenseSlice = createSlice({
       const id = action.payload;
       const deletedExpense = state.expense.find(item => item.id === id);
       state.expense = state.expense.filter(item => item.id !== id);
-      state.totalexpense -= deletedExpense.amount;
-
-      if (state.totalexpense <= 10000) {
-        state.premiumActivation = false;
-      }
     },
-    addPremium(state) {
-      state.premiumActivation = !state.premiumActivation;
+    addPremium(state, action) {
+      state.premiumActivation = action.payload;
     }
 
   }

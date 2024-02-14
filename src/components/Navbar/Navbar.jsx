@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import classes from './Navbar.module.css';
-import { useNavigate } from 'react-router-dom';
+import { Router, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import AuthContext from '../store/Auth-context';
 import { useDispatch, useSelector } from 'react-redux';
@@ -44,7 +44,7 @@ const Navbar = () => {
 
       let data = await res.json()
 
-      console.log(data)
+      alert('Verify Email has been sent successfully')
     }
     catch (error) {
       alert(error.message)
@@ -58,11 +58,10 @@ const Navbar = () => {
 
   }
 
-  const logoutHandler = (e) => {
-    e.preventDefault()
+  const logoutHandler = () => {
 
     localStorage.removeItem('token')
-
+    window.location.reload()
     history('/Auth')
   }
 
